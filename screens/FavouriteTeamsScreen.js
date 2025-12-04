@@ -29,8 +29,7 @@ export default function FavouriteTeamsScreen() {
     try {
       setLoading(true);
 
-      // Try cache first
-      const cachedTeams = await getCache('all_teams');
+      const cachedTeams = await getCache("all_teams");
       if (cachedTeams) {
         setAllTeams(cachedTeams);
         setLoading(false);
@@ -64,7 +63,8 @@ export default function FavouriteTeamsScreen() {
         } catch (err) {
           console.log(`Error loading league ${league}`, err);
         }
-        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        await new Promise((resolve) => setTimeout(resolve, 3000));
       }
 
       const unique = Array.from(
@@ -72,7 +72,7 @@ export default function FavouriteTeamsScreen() {
       );
 
       setAllTeams(unique);
-      await setCache('all_teams', unique);
+      await setCache("all_teams", unique);
     } catch (e) {
       console.log("MAIN ERROR:", e);
     } finally {
@@ -89,18 +89,8 @@ export default function FavouriteTeamsScreen() {
         t?.name?.toLowerCase().includes(search.toLowerCase())
       )
     : favTeams.length > 0
-    ? favTeams 
+    ? favTeams
     : allTeams.slice(0, 40);
-
-  const toggleFavourite = (team) => {
-    const exists = favTeams.find((t) => t.id === team.id);
-
-    if (exists) {
-      setFavTeams(favTeams.filter((t) => t.id !== team.id));
-    } else {
-      setFavTeams([...favTeams, team]);
-    }
-  };
 
   if (loading) {
     return (
@@ -128,10 +118,12 @@ export default function FavouriteTeamsScreen() {
         />
       </View>
 
-      <ScrollView contentContainerStyle={[styles.gridContainer, { paddingBottom: 140 }]}>
+      <ScrollView
+        contentContainerStyle={[styles.gridContainer, { paddingBottom: 140 }]}
+      >
         {filteredTeams.map((team) => (
-          <TouchableOpacity 
-            key={team.id} 
+          <TouchableOpacity
+            key={team.id}
             style={styles.card}
             onPress={() => navigation.navigate("TeamDetails", { team })}
             activeOpacity={0.7}
@@ -140,29 +132,12 @@ export default function FavouriteTeamsScreen() {
               colors={["rgba(255,255,255,0.05)", "rgba(255,255,255,0.02)"]}
               style={styles.cardInner}
             >
-              <TouchableOpacity 
-                onPress={() => toggleFavourite(team)}
-                style={{ position: "absolute", top: 10, right: 10, zIndex: 1 }}
-              >
-                <Ionicons
-                  name={
-                    favTeams.some((t) => t.id === team.id)
-                      ? "heart"
-                      : "heart-outline"
-                  }
-                  size={26}
-                  color="#d7fc5a"
-                />
-              </TouchableOpacity>
-
               <Image
                 source={{ uri: team.crest }}
                 style={styles.teamLogo}
                 resizeMode="contain"
               />
-              <Text style={styles.teamName}>
-                {team.shortName || team.name}
-              </Text>
+              <Text style={styles.teamName}>{team.shortName || team.name}</Text>
             </LinearGradient>
           </TouchableOpacity>
         ))}
@@ -188,10 +163,10 @@ export default function FavouriteTeamsScreen() {
               <Text style={styles.footerLabel}>Favourites</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+          <TouchableOpacity onPress={() => navigation.navigate("News")}>
             <View style={styles.iconContainer}>
-              <Ionicons name="person" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Profile</Text>
+              <Ionicons name="newspaper" size={30} color="#d7fc5a" />
+              <Text style={styles.footerLabel}>News</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -255,15 +230,9 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     backgroundColor: "rgba(6, 5, 5, 0.74)",
-    borderTopColor: "rgba(255,255,255,0.3)",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    borderBottomRightRadius: 30,
-    borderBottomLeftRadius: 30,
+    borderRadius: 30,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
     elevation: 5,
   },
   footerIcons: {

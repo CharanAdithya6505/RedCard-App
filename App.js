@@ -6,6 +6,7 @@ import { HomeScreen, MatchDetailsScreen } from "./screens/HomeScreen";
 import StandingsScreen from "./screens/StandingsScreen";
 import FavouriteTeamsScreen from "./screens/FavouriteTeamsScreen";
 import TeamDetailsScreen from "./screens/TeamDetailsScreen";
+import NewsScreen from "./screens/NewsScreen";
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
           component={TeamDetailsScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="News" component={NewsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -132,7 +132,7 @@ export const HomeScreen = ({ navigation }) => {
       setLoading(true);
 
       // Try cache first
-      const cachedMatches = await getCache('all_matches');
+      const cachedMatches = await getCache("all_matches");
       if (cachedMatches) {
         setMatches(cachedMatches);
         setLoading(false);
@@ -150,7 +150,7 @@ export const HomeScreen = ({ navigation }) => {
         `https://api.football-data.org/v4/matches?competitions=${LEAGUES}&status=SCHEDULED,TIMED,IN_PLAY,PAUSED`,
         { headers: { "X-Auth-Token": API_KEY } }
       );
-      await new Promise(resolve => setTimeout(resolve, 6000)); // Delay to avoid rate limit
+      await new Promise((resolve) => setTimeout(resolve, 6000)); // Delay to avoid rate limit
 
       const upcoming_data = await upcoming_res.json();
 
@@ -203,14 +203,14 @@ export const HomeScreen = ({ navigation }) => {
       setMatches(allMatchesData);
 
       // Cache the processed matches
-      await setCache('all_matches', allMatchesData);
+      await setCache("all_matches", allMatchesData);
 
       // Cache the raw matches for TeamDetails reuse
       const rawMatches = {
         upcoming: upcoming_data.matches || [],
         completed: completed_data.matches || [],
       };
-      await setCache('raw_matches', rawMatches);
+      await setCache("raw_matches", rawMatches);
     } finally {
       setLoading(false);
     }
@@ -247,7 +247,10 @@ export const HomeScreen = ({ navigation }) => {
     }
 
     return (
-      <ScrollView style={{ marginTop: 20 }} contentContainerStyle={[styles.scrollContainer, { paddingBottom: 140 }]}>
+      <ScrollView
+        style={{ marginTop: 20 }}
+        contentContainerStyle={[styles.scrollContainer, { paddingBottom: 140 }]}
+      >
         {current.map((match, i) => (
           <TouchableOpacity
             key={i}
@@ -343,10 +346,10 @@ export const HomeScreen = ({ navigation }) => {
               <Text style={styles.footerLabel}>Favourites</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+          <TouchableOpacity onPress={() => navigation.navigate("News")}>
             <View style={styles.iconContainer}>
-              <Ionicons name="person" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Profile</Text>
+              <Ionicons name="newspaper" size={30} color="#d7fc5a" />
+              <Text style={styles.footerLabel}>News</Text>
             </View>
           </TouchableOpacity>
         </View>

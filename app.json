@@ -5,25 +5,24 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "scheme": "uitemplate", 
+    "scheme": "uitemplate",
     "newArchEnabled": true,
+
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain"
     },
+
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.UITemplate"
     },
+
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.UITemplate"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+
+    "web": {}
   }
 }
