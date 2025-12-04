@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { setCache, getCache } from "../utils/cache";
 
@@ -50,16 +49,10 @@ export default function FavouriteTeamsScreen() {
             }
           );
 
-          if (!res.ok) {
-            console.log(`League ${league} error: ${res.status}`);
-            continue;
-          }
+          if (!res.ok) continue;
 
           const data = await res.json();
-
-          if (data?.teams) {
-            collected.push(...data.teams);
-          }
+          if (data?.teams) collected.push(...data.teams);
         } catch (err) {
           console.log(`Error loading league ${league}`, err);
         }
@@ -119,7 +112,7 @@ export default function FavouriteTeamsScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={[styles.gridContainer, { paddingBottom: 140 }]}
+        contentContainerStyle={[styles.gridContainer, { paddingBottom: 30 }]}
       >
         {filteredTeams.map((team) => (
           <TouchableOpacity
@@ -142,49 +135,13 @@ export default function FavouriteTeamsScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-      <View style={styles.dockFooter}>
-        <View style={styles.footerIcons}>
-          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="home" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Home</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Standings")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="stats-chart" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Standings</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Favourites")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="heart" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Favourites</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("News")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="newspaper" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>News</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  searchContainer: {
-    marginHorizontal: 18,
-    marginBottom: 15,
-  },
+  loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  searchContainer: { marginHorizontal: 18, marginBottom: 15 },
   searchInput: {
     height: 48,
     backgroundColor: "rgba(255,255,255,0.12)",
@@ -208,45 +165,12 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     overflow: "hidden",
   },
-  cardInner: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  teamLogo: {
-    width: 70,
-    height: 70,
-    marginBottom: 12,
-  },
+  cardInner: { flex: 1, justifyContent: "center", alignItems: "center" },
+  teamLogo: { width: 70, height: 70, marginBottom: 12 },
   teamName: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",
-  },
-  dockFooter: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "rgba(6, 5, 5, 0.74)",
-    borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    elevation: 5,
-  },
-  footerIcons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  iconContainer: {
-    alignItems: "center",
-  },
-  footerLabel: {
-    color: "#fff",
-    fontSize: 12,
-    marginTop: 4,
-    opacity: 0.8,
   },
 });

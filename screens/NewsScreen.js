@@ -13,7 +13,6 @@ import {
   Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
 import { setCache, getCache } from "../utils/cache";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -21,7 +20,7 @@ const IMAGE_HEIGHT = SCREEN_WIDTH * 0.9;
 const NEWS_API_KEY = "cf36cf9ed3af4dcdb4d03e1d6d3435a2";
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
-export const NewsScreen = ({ navigation }) => {
+const NewsScreen = ({ navigation }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -71,10 +70,8 @@ export const NewsScreen = ({ navigation }) => {
         setArticles(processed);
         await setCache("football_news", processed);
 
-        // update last updated time
         setLastUpdated(new Date().toLocaleTimeString());
 
-        // initialize fade animations
         const anims = processed.map(() => new Animated.Value(0));
         setFadeAnim(anims);
 
@@ -89,7 +86,7 @@ export const NewsScreen = ({ navigation }) => {
         });
       }
     } catch (e) {
-      console.error("Error fetching news:", e);
+      console.error(e);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -153,13 +150,11 @@ export const NewsScreen = ({ navigation }) => {
               style={[styles.newsCard, { opacity: fadeAnim[i] || 1 }]}
             >
               <Image source={{ uri: article.image }} style={styles.newsImage} />
-
               <View style={styles.cardContent}>
                 <Text style={styles.title}>{article.title}</Text>
                 <Text style={styles.desc} numberOfLines={3}>
                   {article.description}
                 </Text>
-
                 <View style={styles.footerRow}>
                   <Text style={styles.source}>{article.source}</Text>
                   <Text style={styles.date}>{article.publishedAt}</Text>
@@ -183,82 +178,42 @@ export const NewsScreen = ({ navigation }) => {
           <Text style={styles.updatedText}>Last updated at {lastUpdated}</Text>
         )}
       </View>
-
       {renderContent()}
-
-      <View style={styles.dockFooter}>
-        <View style={styles.footerIcons}>
-          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="home" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Home</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate("Standings")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="stats-chart" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Standings</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate("Favourites")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="heart" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Favourites</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate("News")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="newspaper" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>News</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   gradientBackground: { flex: 1 },
-
   headerContainer: {
     marginTop: 65,
     alignItems: "center",
   },
-
   headerTitle: {
     color: "#fff",
     fontSize: 22,
     fontWeight: "700",
   },
-
   updatedText: {
     color: "#d7fc5a",
     fontSize: 13,
     marginTop: 5,
     opacity: 0.8,
   },
-
   loaderWrapper: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-
   emptyStateContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-
   noMatchesText: {
     color: "#fff",
     fontSize: 18,
   },
-
   newsCard: {
     width: "90%",
     backgroundColor: "rgba(255,255,255,0.10)",
@@ -272,69 +227,38 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     elevation: 10,
   },
-
   newsImage: {
     width: "100%",
     height: IMAGE_HEIGHT,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
-
   cardContent: {
     padding: 15,
   },
-
   title: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 6,
   },
-
   desc: {
     color: "rgba(255,255,255,0.85)",
     fontSize: 14,
     marginBottom: 12,
   },
-
   footerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
-
   source: {
     color: "#d7fc5a",
     fontSize: 13,
     fontWeight: "600",
   },
-
   date: {
     color: "rgba(255,255,255,0.6)",
     fontSize: 13,
-  },
-
-  dockFooter: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "rgba(6, 5, 5, 0.74)",
-    borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-
-  footerIcons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-
-  iconContainer: { alignItems: "center" },
-
-  footerLabel: {
-    color: "#fff",
-    fontSize: 12,
-    opacity: 0.8,
   },
 });
 

@@ -122,38 +122,6 @@ export default function StandingsScreen() {
           </View>
         </>
       )}
-
-      <View style={styles.dockFooter}>
-        <View style={styles.footerIcons}>
-          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="home" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Home</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate("Standings")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="stats-chart" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Standings</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate("Favourites")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="heart" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Favourites</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate("News")}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="newspaper" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>News</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
     </LinearGradient>
   );
 }
@@ -262,36 +230,5 @@ const styles = StyleSheet.create({
   modalTextActive: {
     color: "#d7fc5a",
     fontWeight: "800",
-  },
-
-  dockFooter: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "rgba(6, 5, 5, 0.74)",
-    borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    elevation: 5,
-  },
-
-  footerIcons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-
-  iconContainer: {
-    alignItems: "center",
-  },
-
-  footerLabel: {
-    color: "#fff",
-    fontSize: 12,
-    marginTop: 4,
-    opacity: 0.8,
   },
 });
