@@ -60,7 +60,9 @@ export default function TeamDetailsScreen() {
       const data = await res.json();
 
       const player = data?.player?.[0];
-      return player?.strCutout || player?.strThumb || player?.strFanart1 || null;
+      return (
+        player?.strCutout || player?.strThumb || player?.strFanart1 || null
+      );
     } catch {
       return null;
     }
@@ -94,12 +96,8 @@ export default function TeamDetailsScreen() {
       style={{ flex: 1, paddingTop: Platform.OS === "ios" ? 60 : 50 }}
     >
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={26} color="#fff" />
-        </TouchableOpacity>
-
+        <View style={{ width: 40 }} />
         <Text style={styles.titleText}>{details?.shortName || "Team"}</Text>
-
         <View style={{ width: 40 }} />
       </View>
 
@@ -198,7 +196,9 @@ export default function TeamDetailsScreen() {
             {modalLoading ? (
               <View style={styles.modalLoading}>
                 <ActivityIndicator size="large" color="#d7fc5a" />
-                <Text style={{ color: "#fff", marginTop: 10 }}>Loading player...</Text>
+                <Text style={{ color: "#fff", marginTop: 10 }}>
+                  Loading player...
+                </Text>
               </View>
             ) : selectedPlayer ? (
               <View style={styles.modalContent}>
@@ -211,7 +211,9 @@ export default function TeamDetailsScreen() {
                   style={styles.playerPhoto}
                 />
 
-                <Text style={styles.modalPlayerName}>{selectedPlayer.name}</Text>
+                <Text style={styles.modalPlayerName}>
+                  {selectedPlayer.name}
+                </Text>
 
                 <View style={styles.modalInfoBox}>
                   <View style={styles.modalInfoRow}>

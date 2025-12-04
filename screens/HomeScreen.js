@@ -160,11 +160,7 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={{ paddingBottom: 140 }}
       >
         {current.map((match, i) => (
-          <TouchableOpacity
-            key={i}
-            disabled={selectedTab !== "Completed"}
-            onPress={() => navigation.navigate("MatchDetails", { match })}
-          >
+          <TouchableOpacity key={i} activeOpacity={1}>
             <View style={styles.card}>
               <View style={styles.teamContainer}>
                 <Image source={match.homeLogo} style={styles.logo} />

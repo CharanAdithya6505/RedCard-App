@@ -17,14 +17,13 @@ import { setCache, getCache } from "../utils/cache";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const IMAGE_HEIGHT = SCREEN_WIDTH * 0.9;
-const NEWS_API_KEY = "cf36cf9ed3af4dcdb4d03e1d6d3435a2";
+const NEWS_API_KEY = "cf36cf9ed3af4dccb4d03e1d6d3435a2";
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 const NewsScreen = ({ navigation }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState(null);
   const [fadeAnim, setFadeAnim] = useState([]);
 
   const fetchNews = async () => {
@@ -69,8 +68,6 @@ const NewsScreen = ({ navigation }) => {
 
         setArticles(processed);
         await setCache("football_news", processed);
-
-        setLastUpdated(new Date().toLocaleTimeString());
 
         const anims = processed.map(() => new Animated.Value(0));
         setFadeAnim(anims);
@@ -174,9 +171,6 @@ const NewsScreen = ({ navigation }) => {
     >
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Top News</Text>
-        {lastUpdated && (
-          <Text style={styles.updatedText}>Last updated at {lastUpdated}</Text>
-        )}
       </View>
       {renderContent()}
     </LinearGradient>
@@ -193,12 +187,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 22,
     fontWeight: "700",
-  },
-  updatedText: {
-    color: "#d7fc5a",
-    fontSize: 13,
-    marginTop: 5,
-    opacity: 0.8,
   },
   loaderWrapper: {
     flex: 1,

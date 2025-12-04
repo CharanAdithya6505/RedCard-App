@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function SignupScreen() {
   const navigation = useNavigation();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -42,6 +43,14 @@ export default function SignupScreen() {
           <Text style={styles.subtitle}>Sign up to get started</Text>
 
           <TextInput
+            placeholder="Username"
+            placeholderTextColor="#ccc"
+            style={styles.input}
+            onChangeText={setUsername}
+            value={username}
+          />
+
+          <TextInput
             placeholder="Email"
             placeholderTextColor="#ccc"
             style={styles.input}
@@ -64,8 +73,7 @@ export default function SignupScreen() {
 
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text style={styles.signupText}>
-              Already have an account?{" "}
-              <Text style={styles.signupLink}>Login</Text>
+              Already have an account? <Text style={styles.signupLink}>Login</Text>
             </Text>
           </TouchableOpacity>
         </BlurView>
@@ -76,7 +84,6 @@ export default function SignupScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-
   background: { flex: 1, justifyContent: "flex-end" },
 
   card: {

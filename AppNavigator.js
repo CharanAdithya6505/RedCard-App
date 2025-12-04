@@ -12,8 +12,9 @@ import StandingsScreen from "./screens/StandingsScreen";
 import FavouriteTeamsScreen from "./screens/FavouriteTeamsScreen";
 import NewsScreen from "./screens/NewsScreen";
 import TeamDetailsScreen from "./screens/TeamDetailsScreen";
-
 import FooterDock from "./components/FooterDock";
+import ProfileScreen from "./screens/ProfileScreen";
+import EditProfileScreen from "./screens/EditProfileScreen";
 
 const Stack = createStackNavigator();
 
@@ -45,6 +46,8 @@ export default function AppNavigator() {
                 component={FavouriteTeamsScreen}
               />
               <Stack.Screen name="News" component={NewsScreen} />
+              <Stack.Screen name="Profile" component={ProfileScreen} />
+              <Stack.Screen name="EditProfile" component={EditProfileScreen} />
               <Stack.Screen name="TeamDetails" component={TeamDetailsScreen} />
             </Stack.Navigator>
           </View>
