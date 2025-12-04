@@ -68,10 +68,17 @@ export default function StandingsScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        style={{ marginTop: 20 }}
-        contentContainerStyle={{ paddingBottom: 140 }}
-      >
+      <View style={styles.columnLabelRow}>
+        <Text style={styles.colEmpty}></Text>
+
+        <Text style={styles.colTeamLabel}>Team</Text>
+
+        <Text style={styles.colLabel}>MP</Text>
+        <Text style={styles.colLabel}>GD</Text>
+        <Text style={styles.colLabel}>PTS</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
         {standings.map((team, i) => (
           <View key={i} style={styles.row}>
             <Text style={styles.position}>{team.position}</Text>
@@ -86,6 +93,8 @@ export default function StandingsScreen() {
               </Text>
             </View>
 
+            <Text style={styles.played}>{team.playedGames}</Text>
+            <Text style={styles.gd}>{team.goalDifference}</Text>
             <Text style={styles.points}>{team.points}</Text>
           </View>
         ))}
@@ -135,6 +144,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  header: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "700",
+  },
+
   circleButton: {
     width: 42,
     height: 42,
@@ -145,17 +160,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  header: {
+  columnLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    marginBottom: 5,
+    opacity: 0.7,
+  },
+
+  colEmpty: { width: 30 },
+
+  colTeamLabel: {
     color: "#fff",
-    fontSize: 24,
-    fontWeight: "700",
+    fontSize: 14,
+    width: "50%",
+  },
+
+  colLabel: {
+    color: "#fff",
+    fontSize: 14,
+    width: 37,
     textAlign: "center",
   },
 
   row: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "rgba(255,255,255,0.08)",
     marginHorizontal: 15,
     padding: 15,
     borderRadius: 12,
@@ -172,7 +203,7 @@ const styles = StyleSheet.create({
   teamBox: {
     flexDirection: "row",
     alignItems: "center",
-    width: "70%",
+    width: "50%",
   },
 
   teamLogo: {
@@ -185,6 +216,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 15,
     width: "80%",
+  },
+
+  /* NUMBERS */
+  played: {
+    color: "#fff",
+    fontSize: 15,
+    width: 35,
+    textAlign: "center",
+  },
+
+  gd: {
+    color: "#fff",
+    fontSize: 15,
+    width: 35,
+    textAlign: "center",
   },
 
   points: {

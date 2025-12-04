@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 100,
+    height: 85,
     justifyContent: "flex-end",
   },
   dockFooter: {
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: "rgba(0, 0, 0, 0.88)",
     borderRadius: 28,
-    paddingVertical: 14,
+    paddingVertical: 26,
     paddingHorizontal: 10,
   },
   footerIcons: {
