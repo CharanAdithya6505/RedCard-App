@@ -9,9 +9,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
-import { setCache, getCache } from "../utils/cache";
 import FooterDock from "../components/FooterDock";
+import { setCache, getCache } from "../utils/cache";
 
 const API_KEY = "fdd10ed1203d4ce19d9db91b4ff0d8f1";
 
@@ -55,25 +54,32 @@ const HomeScreen = ({ navigation }) => {
 
       const dateFrom = pastDate.toISOString().split("T")[0];
       const dateTo = today.toISOString().split("T")[0];
-
+      const futureDate = new Date(today);
+      futureDate.setDate(today.getDate() + 3);
+      const futureTo = futureDate.toISOString().split("T")[0];
       const upcoming_res = await fetch(
-        `https://api.football-data.org/v4/matches?competitions=${LEAGUES}&status=SCHEDULED,TIMED,IN_PLAY,PAUSED`,
+        `https://api.football-data.org/v4/matches?competitions=${LEAGUES}&dateFrom=${dateTo}&dateTo=${futureTo}`,
         { headers: { "X-Auth-Token": API_KEY } }
       );
-
-      await new Promise((res) => setTimeout(res, 6000));
+      await new Promise((res) => setTimeout(res, 5000));
 
       const upcoming_data = await upcoming_res.json();
-
       const completed_res = await fetch(
         `https://api.football-data.org/v4/matches?competitions=${LEAGUES}&status=FINISHED&dateFrom=${dateFrom}&dateTo=${dateTo}`,
         { headers: { "X-Auth-Token": API_KEY } }
       );
 
       const completed_data = await completed_res.json();
-
-      const live = [], completed = [], upcoming = [];
-
+      const live = [];
+      const completed = [];
+      const upcoming = [];
+      const LIVE_STATUSES = [
+        "IN_PLAY",
+        "PAUSED",
+        "LIVE",
+        "EXTRA_TIME",
+        "PENALTY_SHOOTOUT",
+      ];
       upcoming_data.matches.forEach((m) => {
         const { date, time } = formatDateTime(m.utcDate);
 
@@ -84,7 +90,7 @@ const HomeScreen = ({ navigation }) => {
           awayLogo: { uri: m.awayTeam.crest },
         };
 
-        if (m.status === "IN_PLAY" || m.status === "PAUSED") {
+        if (LIVE_STATUSES.includes(m.status)) {
           obj.score = `${m.score.fullTime.home ?? 0} - ${
             m.score.fullTime.away ?? 0
           }`;
@@ -96,29 +102,26 @@ const HomeScreen = ({ navigation }) => {
           upcoming.push(obj);
         }
       });
-
-      completed_data.matches.forEach((m) => {
-        completed.push({
-          home: m.homeTeam.shortName || m.homeTeam.name,
-          away: m.awayTeam.shortName || m.awayTeam.name,
-          homeLogo: { uri: m.homeTeam.crest },
-          awayLogo: { uri: m.awayTeam.crest },
-          score: `${m.score.fullTime.home} - ${m.score.fullTime.away}`,
-          status: "Full-Time",
-          date: m.utcDate.split("T")[0],
-          goals: [],
+      completed_data.matches
+        .sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate))
+        .forEach((m) => {
+          completed.push({
+            home: m.homeTeam.shortName || m.homeTeam.name,
+            away: m.awayTeam.shortName || m.awayTeam.name,
+            homeLogo: { uri: m.homeTeam.crest },
+            awayLogo: { uri: m.awayTeam.crest },
+            score: `${m.score.fullTime.home} - ${m.score.fullTime.away}`,
+            status: "Full-Time",
+            date: m.utcDate.split("T")[0],
+          });
         });
-      });
 
       const all = { live, completed, upcoming };
 
       setMatches(all);
       await setCache("all_matches", all);
-
-      await setCache("raw_matches", {
-        upcoming: upcoming_data.matches || [],
-        completed: completed_data.matches || [],
-      });
+    } catch (err) {
+      console.log("Match Fetch Error", err);
     } finally {
       setLoading(false);
     }
@@ -157,7 +160,7 @@ const HomeScreen = ({ navigation }) => {
     return (
       <ScrollView
         style={{ marginTop: 20 }}
-        contentContainerStyle={{ paddingBottom: 140 }}
+        contentContainerStyle={{ paddingBottom: 130 }}
       >
         {current.map((match, i) => (
           <TouchableOpacity key={i} activeOpacity={1}>
@@ -171,7 +174,7 @@ const HomeScreen = ({ navigation }) => {
                 {match.time ? (
                   <>
                     <Text style={styles.dateText}>{match.date}</Text>
-                    <Text style={styles.timeText2}>{match.time}</Text>
+                    <Text style={styles.timeText}>{match.time}</Text>
                   </>
                 ) : (
                   <>
@@ -195,11 +198,12 @@ const HomeScreen = ({ navigation }) => {
   return (
     <LinearGradient
       colors={["#3b3d0e", "#0f0f0d", "#1a1a0d"]}
-      style={styles.gradientBackground}
+      style={{ flex: 1 }}
     >
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Watch Matches</Text>
       </View>
+      
       <View style={styles.segmentContainer}>
         {["Completed", "Live", "Upcoming"].map((tab) => (
           <TouchableOpacity
@@ -230,38 +234,21 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   gradientBackground: { flex: 1 },
-
-  loaderWrapper: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
+  loaderWrapper: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyStateContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingBottom: 140,
+    paddingBottom: 130,
   },
-
   noMatchesText: {
     color: "#fff",
     fontSize: 20,
     textAlign: "center",
     opacity: 0.8,
-    paddingHorizontal: 40,
   },
-
-  headerContainer: {
-    marginTop: 65,
-    alignItems: "center",
-  },
-
-  headerTitle: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "700",
-  },
+  headerContainer: { marginTop: 65, alignItems: "center" },
+  headerTitle: { color: "#fff", fontSize: 22, fontWeight: "700" },
 
   segmentContainer: {
     flexDirection: "row",
@@ -269,7 +256,6 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 25,
   },
-
   segmentButton: {
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.3)",
@@ -278,110 +264,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     backgroundColor: "rgba(255,255,255,0.05)",
   },
+  activeSegmentButton: { backgroundColor: "#d7fc5a", borderColor: "#d7fc5a" },
+  segmentText: { color: "#fff", fontSize: 15, fontWeight: "600" },
+  activeSegmentText: { color: "#000", fontWeight: "700" },
 
-  activeSegmentButton: {
-    backgroundColor: "#d7fc5a",
-    borderColor: "#d7fc5a",
-  },
+  card: {
+  backgroundColor: "rgba(255,255,255,0.15)",
+  borderRadius: 20,
+  padding: 22,
+  marginBottom: 20,
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginHorizontal: 20,
+},
 
-  segmentText: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "600",
-  },
 
-  activeSegmentText: {
-    color: "#000",
-    fontWeight: "700",
-  },
-
-  card: {          
-    alignSelf: "center",             
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderRadius: 20,
-    padding: 22,
-    marginBottom: 20,
-    marginHorizontal: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
-  },
-
-  teamContainer: {
-    flex: 1, 
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  centerContent: {
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 100,            
-    paddingHorizontal: 10,
-  },
-
-  logo: {
-    width: 60,            
-    height: 60,
-    resizeMode: "contain",
-  },
-
+  teamContainer: { flex: 1, alignItems: "center" },
+  centerContent: { alignItems: "center", minWidth: 100 },
+  logo: { width: 60, height: 60, resizeMode: "contain" },
   teamName: {
     color: "#fff",
     marginTop: 8,
     fontSize: 15,
     fontWeight: "600",
     textAlign: "center",
-    numberOfLines: 2,
   },
-  dateText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-    opacity: 0.9,
-  },
-
-  timeText2: {
-    color: "#d7fc5a",
-    fontSize: 20,
-    fontWeight: "800",
-    marginTop: 6,
-  },
-
-  scoreText: {
-    color: "#fff",
-    fontSize: 32,
-    fontWeight: "800",
-    letterSpacing: 1,
-  },
-
-  statusText: {
-    color: "#d7fc5a",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginTop: 6,
-    textTransform: "uppercase",
-  },
-
-  timeText2: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-    marginTop: 4,
-  },
-
-  scoreText: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "700",
-  },
-
-  statusText: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 13,
-  },
+  dateText: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  timeText: { color: "#d7fc5a", fontSize: 20, fontWeight: "800", marginTop: 6 },
+  scoreText: { color: "#fff", fontSize: 28, fontWeight: "800" },
+  statusText: { color: "rgba(255,255,255,0.7)", marginTop: 6 },
 });
 
 export default HomeScreen;

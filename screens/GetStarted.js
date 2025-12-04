@@ -46,7 +46,6 @@ export default function GetStarted() {
             style={styles.button}
             onPress={() => navigation.navigate("Login")}
           >
-            {/* 👆 FIXED: Send user to Login, NOT Home */}
             <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
         </View>
