@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 export default function FooterDock() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -12,7 +12,6 @@ export default function FooterDock() {
     <View style={styles.container}>
       <View style={[styles.dockFooter, { paddingBottom: insets.bottom || 12 }]}>
         <View style={styles.footerIcons}>
-
           <TouchableOpacity onPress={() => navigation.navigate("Home")}>
             <View style={styles.iconContainer}>
               <Ionicons name="home" size={30} color="#d7fc5a" />
@@ -29,8 +28,8 @@ export default function FooterDock() {
 
           <TouchableOpacity onPress={() => navigation.navigate("Favourites")}>
             <View style={styles.iconContainer}>
-              <Ionicons name="heart" size={30} color="#d7fc5a" />
-              <Text style={styles.footerLabel}>Favourites</Text>
+              <MaterialCommunityIcons name="soccer" size={30} color="#d7fc5a" />
+              <Text style={styles.footerLabel}>Teams</Text>
             </View>
           </TouchableOpacity>
 
@@ -40,7 +39,6 @@ export default function FooterDock() {
               <Text style={styles.footerLabel}>News</Text>
             </View>
           </TouchableOpacity>
-
         </View>
       </View>
     </View>

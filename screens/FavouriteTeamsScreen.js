@@ -8,12 +8,16 @@ import {
   Image,
   TextInput,
   ActivityIndicator,
+  Dimensions,
+  Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { setCache, getCache } from "../utils/cache";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 const API_KEY = "fdd10ed1203d4ce19d9db91b4ff0d8f1";
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export default function FavouriteTeamsScreen() {
   const navigation = useNavigation();
@@ -27,47 +31,34 @@ export default function FavouriteTeamsScreen() {
   const fetchLeagueTeams = async () => {
     try {
       setLoading(true);
-
       const cachedTeams = await getCache("all_teams");
       if (cachedTeams) {
         setAllTeams(cachedTeams);
         setLoading(false);
         return;
       }
-
       let collected = [];
-
       for (const league of leagues) {
-        try {
-          const res = await fetch(
-            `https://api.football-data.org/v4/competitions/${league}/teams`,
-            {
-              headers: {
-                "X-Auth-Token": API_KEY,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (!res.ok) continue;
-
+        const res = await fetch(
+          `https://api.football-data.org/v4/competitions/${league}/teams`,
+          {
+            headers: {
+              "X-Auth-Token": API_KEY,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (res.ok) {
           const data = await res.json();
           if (data?.teams) collected.push(...data.teams);
-        } catch (err) {
-          console.log(`Error loading league ${league}`, err);
         }
-
         await new Promise((resolve) => setTimeout(resolve, 3000));
       }
-
       const unique = Array.from(
         new Map(collected.map((t) => [t.id, t])).values()
       );
-
       setAllTeams(unique);
       await setCache("all_teams", unique);
-    } catch (e) {
-      console.log("MAIN ERROR:", e);
     } finally {
       setLoading(false);
     }
@@ -83,7 +74,7 @@ export default function FavouriteTeamsScreen() {
       )
     : favTeams.length > 0
     ? favTeams
-    : allTeams.slice(0, 40);
+    : allTeams.slice(0, 60);
 
   if (loading) {
     return (
@@ -99,78 +90,120 @@ export default function FavouriteTeamsScreen() {
   return (
     <LinearGradient
       colors={["#3b3d0e", "#0f0f0d", "#1a1a0d"]}
-      style={{ flex: 1, paddingTop: 50 }}
+      style={{ flex: 1 }}
     >
-      <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="Search team..."
-          placeholderTextColor="#ccc"
-          style={styles.searchInput}
-          value={search}
-          onChangeText={setSearch}
-        />
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBox}>
+            <Ionicons
+              name="search"
+              size={18}
+              color="#aaa"
+              style={{ marginRight: 6 }}
+            />
+            <TextInput
+              placeholder="Search teams..."
+              placeholderTextColor="#aaa"
+              style={styles.searchInput}
+              value={search}
+              onChangeText={setSearch}
+            />
+          </View>
+        </View>
 
-      <ScrollView
-        contentContainerStyle={[styles.gridContainer, { paddingBottom: 30 }]}
-      >
-        {filteredTeams.map((team) => (
-          <TouchableOpacity
-            key={team.id}
-            style={styles.card}
-            onPress={() => navigation.navigate("TeamDetails", { team })}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={["rgba(255,255,255,0.05)", "rgba(255,255,255,0.02)"]}
-              style={styles.cardInner}
+        <ScrollView contentContainerStyle={styles.grid}>
+          {filteredTeams.map((team) => (
+            <TouchableOpacity
+              key={team.id}
+              style={styles.item}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate("TeamDetails", { team })}
             >
-              <Image
-                source={{ uri: team.crest }}
-                style={styles.teamLogo}
-                resizeMode="contain"
-              />
+              <View style={styles.circle}>
+                <Image
+                  source={{ uri: team.crest }}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+              </View>
               <Text style={styles.teamName}>{team.shortName || team.name}</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  searchContainer: { marginHorizontal: 18, marginBottom: 15 },
-  searchInput: {
-    height: 48,
-    backgroundColor: "rgba(255,255,255,0.12)",
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    color: "#fff",
-    fontSize: 16,
+
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === "ios" ? 10 : 12,
   },
-  gridContainer: {
+
+  searchContainer: {
+    marginTop: 10,
+    marginBottom: 25,
+    marginHorizontal: 16,
+  },
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.10)",
+    height: 38,
+    borderRadius: 18,
     paddingHorizontal: 12,
-    paddingBottom: 30,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+
+  searchInput: {
+    flex: 1,
+    color: "#fff",
+    fontSize: 14,
+    paddingVertical: 6,
+  },
+
+  grid: {
+    paddingHorizontal: 10,
+    paddingBottom: 120,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
-  card: {
-    width: "48%",
-    height: 170,
-    backgroundColor: "rgba(255,255,255,0.10)",
-    borderRadius: 22,
-    marginBottom: 18,
-    overflow: "hidden",
+
+  item: {
+    width: SCREEN_WIDTH / 3.3,
+    alignItems: "center",
+    marginBottom: 22,
   },
-  cardInner: { flex: 1, justifyContent: "center", alignItems: "center" },
-  teamLogo: { width: 70, height: 70, marginBottom: 12 },
+
+  circle: {
+    width: 78,
+    height: 78,
+    borderRadius: 100,
+    backgroundColor: "rgba(255,255,255,0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+
+  logo: {
+    width: 55,
+    height: 55,
+  },
+
   teamName: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "600",
+    marginTop: 8,
     textAlign: "center",
   },
 });
