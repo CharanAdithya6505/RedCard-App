@@ -1,5 +1,6 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -16,36 +17,40 @@ import FooterDock from "./components/FooterDock";
 
 const Stack = createStackNavigator();
 
-const withFooter = (Component) => {
-  return function WrappedComponent(props) {
-    return (
-      <View style={{ flex: 1 }}>
-        <Component {...props} />
-        <FooterDock />
-      </View>
-    );
-  };
-};
-
 export default function AppNavigator() {
+  const [currentRoute, setCurrentRoute] = useState("GetStarted");
+
+  const hideFooterScreens = ["GetStarted", "Login", "Signup"];
+  const shouldShowFooter = !hideFooterScreens.includes(currentRoute);
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="GetStarted" component={GetStarted} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Signup" component={SignupScreen} />
-        <Stack.Screen name="Home" component={withFooter(HomeScreen)} />
-        <Stack.Screen name="Standings" component={withFooter(StandingsScreen)} />
-        <Stack.Screen
-          name="Favourites"
-          component={withFooter(FavouriteTeamsScreen)}
-        />
-        <Stack.Screen name="News" component={withFooter(NewsScreen)} />
-        <Stack.Screen
-          name="TeamDetails"
-          component={withFooter(TeamDetailsScreen)}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer
+        onStateChange={(state) => {
+          const route = state?.routes[state.index]?.name;
+          if (route) setCurrentRoute(route);
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 1 }}>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="GetStarted" component={GetStarted} />
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Signup" component={SignupScreen} />
+
+              <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen name="Standings" component={StandingsScreen} />
+              <Stack.Screen
+                name="Favourites"
+                component={FavouriteTeamsScreen}
+              />
+              <Stack.Screen name="News" component={NewsScreen} />
+              <Stack.Screen name="TeamDetails" component={TeamDetailsScreen} />
+            </Stack.Navigator>
+          </View>
+          {shouldShowFooter && <FooterDock />}
+        </View>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
