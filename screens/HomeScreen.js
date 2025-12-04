@@ -204,8 +204,6 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Watch Matches</Text>
       </View>
-
-      {/* Segmented Control */}
       <View style={styles.segmentContainer}>
         {["Completed", "Live", "Upcoming"].map((tab) => (
           <TouchableOpacity
@@ -229,8 +227,6 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       {renderContent()}
-
-      {/* STICKY FOOTER */}
       <FooterDock navigation={navigation} active="Home" />
     </LinearGradient>
   );
@@ -344,18 +340,33 @@ const styles = StyleSheet.create({
     textAlign: "center",
     numberOfLines: 2,
   },
+  dateText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+    opacity: 0.9,
+  },
+
+  timeText2: {
+    color: "#d7fc5a",
+    fontSize: 20,
+    fontWeight: "800",
+    marginTop: 6,
+  },
 
   scoreText: {
     color: "#fff",
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: "800",
     letterSpacing: 1,
   },
 
   statusText: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 13,
-    marginTop: 4,
+    color: "#d7fc5a",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: 6,
+    textTransform: "uppercase",
   },
 
   timeText2: {
