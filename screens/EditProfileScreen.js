@@ -11,12 +11,14 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { auth, db, storage } from "../firebase";
 import { updateProfile } from "firebase/auth";
-import { doc, updateDoc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
-export default function EditProfileScreen({ navigation }) {
+export default function EditProfileScreen() {
+  const navigation = useNavigation();
   const user = auth.currentUser;
 
   const [username, setUsername] = useState(user?.displayName || "");
@@ -76,19 +78,14 @@ export default function EditProfileScreen({ navigation }) {
       style={styles.gradientBackground}
     >
       <View style={styles.container}>
-        <LinearGradient colors={["#3b3b3b", "#2f2f2f"]} style={styles.card}>
-          <Text style={styles.title}>Edit Profile</Text>
-
-          <TouchableOpacity onPress={pickImage} style={styles.imageWrapper}>
+        <LinearGradient colors={["#4a4f0f", "#2a2a0c"]} style={styles.card}>
+          <TouchableOpacity onPress={pickImage}>
             <Image
               source={{
                 uri: image || "https://i.ibb.co/4pDNDk1/avatar.png",
               }}
               style={styles.avatar}
             />
-            <View style={styles.editIcon}>
-              <Ionicons name="camera" size={22} color="#000" />
-            </View>
           </TouchableOpacity>
 
           <TextInput
@@ -96,8 +93,10 @@ export default function EditProfileScreen({ navigation }) {
             placeholderTextColor="#aaa"
             value={username}
             onChangeText={setUsername}
-            style={styles.input}
+            style={styles.nameInput}
           />
+
+          <Text style={styles.email}>{user?.email}</Text>
 
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
             {loading ? (
@@ -133,46 +132,43 @@ const styles = StyleSheet.create({
     elevation: 8,
     alignItems: "center",
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "800",
-    color: "#d7fc5a",
-    marginBottom: 25,
-  },
-  imageWrapper: { position: "relative" },
   avatar: {
     width: 130,
     height: 130,
     borderRadius: 70,
     borderWidth: 3,
     borderColor: "#d7fc5a",
+    marginBottom: 20,
   },
-  editIcon: {
-    position: "absolute",
-    bottom: 4,
-    right: 4,
-    backgroundColor: "#d7fc5a",
-    borderRadius: 18,
-    padding: 6,
-  },
-  input: {
+  nameInput: {
     width: "100%",
-    marginTop: 25,
     backgroundColor: "rgba(255,255,255,0.13)",
-    padding: 14,
+    color: "#d7fc5a",
+    fontSize: 22,
+    fontWeight: "700",
+    textAlign: "center",
     borderRadius: 14,
-    color: "#fff",
-    fontSize: 16,
+    paddingVertical: 10,
+    marginBottom: 10,
   },
+  email: { color: "#ddd", fontSize: 14, marginBottom: 20 },
   saveBtn: {
-    width: "100%",
+    flexDirection: "row",
     backgroundColor: "#d7fc5a",
-    padding: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
     borderRadius: 14,
-    marginTop: 30,
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  saveText: { marginLeft: 8, fontWeight: "700", color: "#000", fontSize: 16 },
+  cancelBtn: {
+    flexDirection: "row",
+    backgroundColor: "#ff4c4c",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 14,
     alignItems: "center",
   },
-  saveText: { fontSize: 17, fontWeight: "700", color: "#000" },
-  cancelBtn: { marginTop: 15 },
-  cancelText: { color: "#d7fc5a", fontSize: 15, fontWeight: "600" },
+  cancelText: { marginLeft: 8, fontWeight: "700", color: "#000", fontSize: 16 },
 });

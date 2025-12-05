@@ -17,10 +17,12 @@ import { setCache, getCache } from "../utils/cache";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const IMAGE_HEIGHT = SCREEN_WIDTH * 0.9;
-const NEWS_API_KEY = "cf36cf9ed3af4dccb4d03e1d6d3435a2";
-const REFRESH_INTERVAL = 5 * 60 * 1000;
 
-const NewsScreen = ({ navigation }) => {
+const GNEWS_KEY = "49911c31e3d5302ae0e5740877008eb6";
+
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+const NewsScreen = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -29,46 +31,35 @@ const NewsScreen = ({ navigation }) => {
   const fetchNews = async () => {
     try {
       if (!refreshing) setLoading(true);
-      const cachedArticles = await getCache("football_news");
-      if (cachedArticles && !refreshing) {
-        setArticles(cachedArticles);
-        setLoading(false);
-      }
 
-      const today = new Date();
-      const fromDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0];
+      // Load cached news immediately
+      const cached = await getCache("football_news");
+      if (cached) setArticles(cached);
 
-      const query =
-        '("Premier League" OR "La Liga" OR "Bundesliga" OR "Serie A" OR "Ligue 1") AND (soccer OR football) -NFL -"American football" -MLS';
-
-      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
-        query
-      )}&from=${fromDate}&sortBy=publishedAt&language=en&pageSize=20&excludeDomains=espn.com,usatoday.com,cbssports.com,foxnews.com,nfl.com&apiKey=${NEWS_API_KEY}`;
+      // GNews API football query
+      const url = `https://gnews.io/api/v4/search?q=football OR soccer OR premier league OR la liga OR bundesliga&lang=en&country=gb&max=30&apikey=${GNEWS_KEY}`;
 
       const res = await fetch(url);
       const data = await res.json();
 
-      if (data.status === "ok") {
-        const processed = data.articles
-          .map((a) => ({
-            title: a.title,
-            description: a.description || "",
-            url: a.url,
-            image: a.urlToImage,
-            source: a.source.name,
-            publishedAt: new Date(a.publishedAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            }),
-          }))
-          .filter((a) => a.image && a.title);
+      if (data.articles) {
+        const processed = data.articles.map((a) => ({
+          title: a.title,
+          description: a.description || "",
+          url: a.url,
+          image: a.image,
+          source: a.source?.name || "Unknown",
+          publishedAt: new Date(a.publishedAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }),
+        }));
 
         setArticles(processed);
         await setCache("football_news", processed);
 
+        // Animations
         const anims = processed.map(() => new Animated.Value(0));
         setFadeAnim(anims);
 
@@ -83,6 +74,7 @@ const NewsScreen = ({ navigation }) => {
         });
       }
     } catch (e) {
+      console.log("API failed → using cache only");
       console.error(e);
     } finally {
       setLoading(false);
@@ -92,11 +84,7 @@ const NewsScreen = ({ navigation }) => {
 
   useEffect(() => {
     fetchNews();
-
-    const interval = setInterval(() => {
-      fetchNews();
-    }, REFRESH_INTERVAL);
-
+    const interval = setInterval(fetchNews, REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, []);
 
@@ -117,9 +105,7 @@ const NewsScreen = ({ navigation }) => {
     if (articles.length === 0) {
       return (
         <View style={styles.emptyStateContainer}>
-          <Text style={styles.noMatchesText}>
-            No recent news available right now. Check back soon!
-          </Text>
+          <Text style={styles.noMatchesText}>No news available</Text>
         </View>
       );
     }
@@ -147,11 +133,14 @@ const NewsScreen = ({ navigation }) => {
               style={[styles.newsCard, { opacity: fadeAnim[i] || 1 }]}
             >
               <Image source={{ uri: article.image }} style={styles.newsImage} />
+
               <View style={styles.cardContent}>
                 <Text style={styles.title}>{article.title}</Text>
+
                 <Text style={styles.desc} numberOfLines={3}>
                   {article.description}
                 </Text>
+
                 <View style={styles.footerRow}>
                   <Text style={styles.source}>{article.source}</Text>
                   <Text style={styles.date}>{article.publishedAt}</Text>
@@ -172,13 +161,16 @@ const NewsScreen = ({ navigation }) => {
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Top News</Text>
       </View>
+
       {renderContent()}
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  gradientBackground: { flex: 1 },
+  gradientBackground: {
+    flex: 1,
+  },
   headerContainer: {
     marginTop: 65,
     alignItems: "center",

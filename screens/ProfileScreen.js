@@ -29,7 +29,7 @@ export default function ProfileScreen() {
       style={styles.gradientBackground}
     >
       <View style={styles.container}>
-        <LinearGradient colors={["#3b3b3b", "#2f2f2f"]} style={styles.card}>
+        <LinearGradient colors={["#4a4f0f", "#2a2a0c"]} style={styles.card}>
           <Image
             source={{
               uri: photo || "https://i.ibb.co/4pDNDk1/avatar.png",
@@ -65,13 +65,14 @@ const styles = StyleSheet.create({
     padding: 35,
     borderRadius: 32,
     backgroundColor: "#3a3a3a",
-    alignItems: "center",
     shadowColor: "#000",
     shadowOpacity: 0.25,
     shadowRadius: 20,
     shadowOffset: { width: 0, height: 10 },
     elevation: 8,
+    alignItems: "center",
   },
+
   avatar: {
     width: 130,
     height: 130,
